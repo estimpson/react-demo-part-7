@@ -3,9 +3,31 @@ import * as defs from '../definitions/definitions';
 import { Dispatch } from 'react';
 import { Action, ActionTypes } from '../actions/actionTypes';
 import { connect } from 'react-redux';
+import {
+    Link,
+    Route,
+    RouteComponentProps,
+    Switch,
+    withRouter,
+} from 'react-router-dom';
+import { ViewChannel } from './ViewChannel';
+import {
+    Alert,
+    Card,
+    Col,
+    Container,
+    ListGroup,
+    ListGroupItem,
+    Row,
+} from 'react-bootstrap';
 
-// Properties received from parent component, in this case none
-interface params {}
+// Properties received from the url
+interface urlParams {
+    channelId: string;
+}
+
+// React-Router interface for url props
+interface params extends RouteComponentProps<urlParams> {}
 
 // Data to be received from the Redux store
 interface connectedState {
@@ -53,7 +75,7 @@ const tempChannels: defs.Channel[] = [
     },
 ];
 
-// Generate callback(s) for the Redux store.
+// Generate callback(s) for the Redux store
 const mapDispatchToProps = (dispatch: Dispatch<Action>): connectedDispatch => ({
     reloadChannels: async () => {
         //TODO: load data from server
@@ -68,8 +90,11 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>): connectedDispatch => ({
 // Full props combining params and connectedState
 type fullParams = params & connectedState & connectedDispatch;
 
+// Local state for the component, in this case none
+interface localState {}
+
 // The component
-class ChannelListComponent extends React.Component<fullParams> {
+class ChannelListComponent extends React.Component<fullParams, localState> {
     componentDidMount() {
         // dispatch the Reload Channels action to get the channels and update the store
         this.props.reloadChannels();
@@ -77,26 +102,64 @@ class ChannelListComponent extends React.Component<fullParams> {
 
     render() {
         return (
-            <div>
-                <div>
-                    <h3>Available Channels</h3>
-                </div>
-                <div>
-                    {this.props.channels
-                        ? this.props.channels.map((channel) => (
-                              <div key={channel.channelId}>
-                                  {channel.displayName}
-                              </div>
-                          ))
-                        : 'Loading...'}
-                </div>
-            </div>
+            <Container>
+                <Row>
+                    <Col xs={12}>
+                        <Card>
+                            <Card.Body>
+                                <Card.Title>Available Channels</Card.Title>
+                                {this.props.channels ? (
+                                    <ListGroup>
+                                        {this.props.channels.map((channel) => (
+                                            <ListGroupItem
+                                                key={channel.channelId}
+                                            >
+                                                <Row>
+                                                    <Col xs={6}>
+                                                        {channel.displayName}
+                                                    </Col>
+                                                    <Col xs={6}>
+                                                        <Link
+                                                            to={`${this.props.match.url}/${channel.channelId}/view`}
+                                                        >
+                                                            Open
+                                                        </Link>
+                                                    </Col>
+                                                </Row>
+                                            </ListGroupItem>
+                                        ))}
+                                    </ListGroup>
+                                ) : (
+                                    <Card.Text>Loading...</Card.Text>
+                                )}
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
+                <Switch>
+                    <Route
+                        path={`${this.props.match.url}/:channelId/view`}
+                        component={ViewChannel}
+                    />
+                    <Route
+                        render={() => (
+                            <Alert variant="warning">
+                                Please select a Channel
+                            </Alert>
+                        )}
+                    />
+                </Switch>
+                <Row>
+                    <Col xs={12}>
+                        <Link to="/">Return to home</Link>
+                    </Col>
+                </Row>
+            </Container>
         );
     }
 }
 
 // "Connected" wrapper for the component
-export const ChannelList = connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(ChannelListComponent);
+export const ChannelList = withRouter(
+    connect(mapStateToProps, mapDispatchToProps)(ChannelListComponent),
+);
