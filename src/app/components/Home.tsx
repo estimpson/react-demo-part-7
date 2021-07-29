@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { Row, Col, Container, Card } from 'react-bootstrap';
+import { Counter } from './Counter';
 
 export class Home extends React.Component<{}> {
     render() {
@@ -11,7 +12,9 @@ export class Home extends React.Component<{}> {
                         <Card>
                             <Card.Body>
                                 <Card.Title>App Root</Card.Title>
-                                <Card.Text>Hello World</Card.Text>
+                                <Card.Text>
+                                    <Counter />
+                                </Card.Text>
                             </Card.Body>
                             <Card.Footer>
                                 <Link to="/channels">Go to channel list</Link>
