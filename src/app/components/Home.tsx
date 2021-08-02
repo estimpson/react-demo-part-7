@@ -1,6 +1,13 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { Row, Col, Container, Card } from 'react-bootstrap';
+import {
+    Row,
+    Col,
+    Container,
+    Card,
+    ListGroup,
+    ListGroupItem,
+} from 'react-bootstrap';
 import { Counter } from './Counter';
 
 export class Home extends React.Component<{}> {
@@ -17,7 +24,20 @@ export class Home extends React.Component<{}> {
                                 </Card.Text>
                             </Card.Body>
                             <Card.Footer>
-                                <Link to="/channels">Go to channel list</Link>
+                                <ListGroup>
+                                    <ListGroupItem>
+                                        <Link to="/channels">
+                                            Go to channel list
+                                        </Link>
+                                    </ListGroupItem>
+                                    <ListGroupItem>
+                                        <Link to="/channels">
+                                            <Link to="/printers">
+                                                Go to printers list
+                                            </Link>
+                                        </Link>
+                                    </ListGroupItem>
+                                </ListGroup>
                             </Card.Footer>
                         </Card>
                     </Col>
